@@ -7,7 +7,8 @@ import {
   Car, 
   Home, 
   MoreHorizontal, 
-  Palmtree, 
+  Palmtree,
+  Pencil,
   Plus, 
   ShieldCheck, 
   Trash2 
@@ -17,6 +18,7 @@ import { calculateProgress, formatCurrency, calculateMonthlyRequirement, calcula
 
 interface GoalCardProps {
   goal: FinancialGoal;
+  onEdit: (goal: FinancialGoal) => void;
   onDelete: (id: string) => void;
   onUpdateAmount: (id: string, amount: number) => void;
 }
@@ -37,7 +39,7 @@ const categoryColors: Record<GoalCategory, string> = {
   other: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
 };
 
-export const GoalCard: React.FC<GoalCardProps> = ({ goal, onDelete, onUpdateAmount }) => {
+export const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit, onDelete, onUpdateAmount }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [inputValue, setInputValue] = useState('');
   
@@ -80,13 +82,24 @@ export const GoalCard: React.FC<GoalCardProps> = ({ goal, onDelete, onUpdateAmou
             </p>
           </div>
         </div>
-        <button
-          onClick={() => onDelete(goal.id)}
-          className="p-1.5 text-slate-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
-          id={`delete-${goal.id}`}
-        >
-          <Trash2 size={16} />
-        </button>
+        <div className="flex items-center gap-1.5 transition-opacity">
+          <button
+            onClick={() => onEdit(goal)}
+            className="p-2 text-slate-500 hover:text-emerald-400 hover:bg-emerald-500/10 rounded-lg transition-all"
+            title="Editar meta"
+            id={`edit-${goal.id}`}
+          >
+            <Pencil size={15} />
+          </button>
+          <button
+            onClick={() => onDelete(goal.id)}
+            className="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-all"
+            title="Excluir meta"
+            id={`delete-${goal.id}`}
+          >
+            <Trash2 size={15} />
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4 mb-6">

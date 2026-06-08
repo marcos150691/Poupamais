@@ -17,28 +17,45 @@ export default function App() {
     return saved ? JSON.parse(saved) : [];
   });
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<FinancialGoal | null>(null);
 
   useEffect(() => {
     localStorage.setItem('financial-goals', JSON.stringify(goals));
   }, [goals]);
 
-  const handleAddGoal = (data: {
+  const handleSaveGoal = (data: {
     title: string;
     targetAmount: number;
     currentAmount: number;
     deadline: string;
     category: GoalCategory;
   }) => {
-    const newGoal: FinancialGoal = {
-      ...data,
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-    };
-    setGoals((prev) => [newGoal, ...prev]);
+    if (editingGoal) {
+      setGoals((prev) =>
+        prev.map((g) =>
+          g.id === editingGoal.id
+            ? { ...g, ...data }
+            : g
+        )
+      );
+      setEditingGoal(null);
+    } else {
+      const newGoal: FinancialGoal = {
+        ...data,
+        id: crypto.randomUUID(),
+        createdAt: new Date().toISOString(),
+      };
+      setGoals((prev) => [newGoal, ...prev]);
+    }
   };
 
   const handleDeleteGoal = (id: string) => {
     setGoals((prev) => prev.filter((g) => g.id !== id));
+  };
+
+  const handleEditGoal = (goal: FinancialGoal) => {
+    setEditingGoal(goal);
+    setIsFormOpen(true);
   };
 
   const handleUpdateAmount = (id: string, amount: number) => {
@@ -125,6 +142,7 @@ export default function App() {
                     <GoalCard
                       key={goal.id}
                       goal={goal}
+                      onEdit={handleEditGoal}
                       onDelete={handleDeleteGoal}
                       onUpdateAmount={handleUpdateAmount}
                     />
@@ -150,8 +168,12 @@ export default function App() {
       <AnimatePresence>
         {isFormOpen && (
           <GoalForm
-            onAdd={handleAddGoal}
-            onClose={() => setIsFormOpen(false)}
+            onSave={handleSaveGoal}
+            onClose={() => {
+              setIsFormOpen(false);
+              setEditingGoal(null);
+            }}
+            initialData={editingGoal || undefined}
           />
         )}
       </AnimatePresence>

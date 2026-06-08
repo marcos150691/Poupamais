@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X, Target, Calendar, Tag } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { GoalCategory } from '../types';
+import { motion } from 'motion/react';
+import { GoalCategory, FinancialGoal } from '../types';
 
 interface GoalFormProps {
-  onAdd: (data: {
+  onSave: (data: {
     title: string;
     targetAmount: number;
     currentAmount: number;
@@ -12,6 +12,7 @@ interface GoalFormProps {
     category: GoalCategory;
   }) => void;
   onClose: () => void;
+  initialData?: FinancialGoal;
 }
 
 const categories: { label: string; value: GoalCategory }[] = [
@@ -22,18 +23,18 @@ const categories: { label: string; value: GoalCategory }[] = [
   { label: 'Outros', value: 'other' },
 ];
 
-export function GoalForm({ onAdd, onClose }: GoalFormProps) {
-  const [title, setTitle] = useState('');
-  const [targetAmount, setTargetAmount] = useState('');
-  const [currentAmount, setCurrentAmount] = useState('0');
-  const [deadline, setDeadline] = useState('');
-  const [category, setCategory] = useState<GoalCategory>('other');
+export function GoalForm({ onSave, onClose, initialData }: GoalFormProps) {
+  const [title, setTitle] = useState(initialData?.title || '');
+  const [targetAmount, setTargetAmount] = useState(initialData?.targetAmount.toString() || '');
+  const [currentAmount, setCurrentAmount] = useState(initialData?.currentAmount.toString() || '0');
+  const [deadline, setDeadline] = useState(initialData?.deadline || '');
+  const [category, setCategory] = useState<GoalCategory>(initialData?.category || 'other');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !targetAmount || !deadline) return;
 
-    onAdd({
+    onSave({
       title,
       targetAmount: Number(targetAmount),
       currentAmount: Number(currentAmount),
@@ -58,7 +59,9 @@ export function GoalForm({ onAdd, onClose }: GoalFormProps) {
         id="goal-form"
       >
         <div className="flex justify-between items-center mb-8">
-          <h2 className="text-2xl font-bold text-white tracking-tighter uppercase italic">Nova Meta</h2>
+          <h2 className="text-2xl font-bold text-white tracking-tighter uppercase italic">
+            {initialData ? 'Editar Meta' : 'Nova Meta'}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-slate-500 hover:text-white transition-colors"
@@ -155,7 +158,7 @@ export function GoalForm({ onAdd, onClose }: GoalFormProps) {
             className="w-full py-5 bg-emerald-500 text-slate-950 rounded-2xl font-black uppercase tracking-[0.3em] text-sm hover:bg-emerald-400 transition-all mt-4 shadow-xl shadow-emerald-500/10 active:scale-[0.98]"
             id="submit-goal"
           >
-            Lançar Meta
+            {initialData ? 'Salvar Alterações' : 'Lançar Meta'}
           </button>
         </form>
       </motion.div>
