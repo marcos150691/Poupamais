@@ -1,0 +1,6 @@
+{
+  "name": "Metas Financeiras",
+  "description": "Um aplicativo elegante para gerenciar e acompanhar suas metas financeiras com prazos personalizados.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
